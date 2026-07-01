@@ -1,0 +1,43 @@
+DIR:/home
+DIR:/home/user
+FILE:/home/user/main.txt
+CONTENT:4
+test
+END_FILE
+DIR:/home/garima
+DIR:/home/priyu
+DIR:/dirB
+DIR:/dirB/dirC
+DIR:/fil.txt
+FILE:/test.txt
+CONTENT:0
+END_FILE
+FILE:/file2.txt
+CONTENT:0
+END_FILE
+FILE:/file3.txt
+CONTENT:0
+END_FILE
+FILE:/file4.txt
+CONTENT:0
+END_FILE
+FILE:/a.txt
+CONTENT:0
+END_FILE
+FILE:/b.txt
+CONTENT:0
+END_FILE
+FILE:/testing.txt
+CONTENT:19
+line two
+line three
+END_FILE
+DIR:/search_dir
+FILE:/search_dir/info.txt
+CONTENT:24
+C++ programming language
+END_FILE
+FILE:/search_dir/code.cpp
+CONTENT:0
+END_FILE
+DIR:/search_dir/sub_dir

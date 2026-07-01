@@ -1,0 +1,213 @@
+@startuml VFSClassDiagram_v7
+
+skinparam backgroundColor #FFFFFF
+skinparam classBackgroundColor #F5F7FA
+skinparam classBorderColor #5A5A8A
+skinparam classBorderThickness 1
+skinparam classHeaderBackgroundColor #D0D4F0
+skinparam classFontColor #1A1A2E
+skinparam classAttributeFontColor #2C2C4A
+skinparam classStereotypeFontColor #5555AA
+skinparam arrowColor #4A4A7A
+skinparam arrowThickness 1
+skinparam lineType ortho
+skinparam shadowing false
+skinparam roundcorner 4
+skinparam defaultFontName sans-serif
+skinparam defaultFontSize 13
+
+skinparam class {
+    AttributeFontColor #2C2C4A
+    AttributeFontSize 12
+    MethodFontColor #1A6B1A
+    MethodFontSize 12
+}
+
+' ─────────────────────────────────────
+'  Application (top-level owner)
+' ─────────────────────────────────────
+
+class Application {
+    - fs        : FileSystem
+    - factory   : ICommandFactory
+    - processor : CommandProcessor
+    --
+    + start() : void
+}
+
+' ─────────────────────────────────────
+'  CommandProcessor (REPL loop)
+' ─────────────────────────────────────
+
+class CommandProcessor {
+    --
+    + run() : void
+}
+
+' ─────────────────────────────────────
+'  Command layer
+' ─────────────────────────────────────
+
+interface ICommandFactory <<interface>> {
+    --
+    + createCommand(name: string) : unique_ptr<ICommand>
+}
+
+class ConcreteCommandFactory {
+    --
+    + createCommand(name: string) : unique_ptr<ICommand>
+}
+
+interface ICommand <<interface>> {
+    --
+    + execute(args: vector<string>) : void
+}
+
+class ConcreteCommands <<group>> {
+    MkdirCommand
+    TouchCommand
+    LsCommand
+    CdCommand
+    PwdCommand
+    RmCommand
+    CpCommand
+    CatCommand
+    EchoCommand
+    FindCommand
+    MvCommand
+    --
+    + execute(args: vector<string>) : void
+}
+
+' ─────────────────────────────────────
+'  Core FileSystem
+' ─────────────────────────────────────
+
+class FileSystem {
+    - root : shared_ptr<Directory>
+    - cwd  : shared_ptr<Directory>
+    --
+    + initialize() : void
+    + createDir(path: string) : bool
+    + createFile(path: string) : bool
+    + removeFile(path: string) : bool
+    + removeDir(path: string) : bool
+    + changeDir(path: string) : bool
+    + getCurrentPath() : string
+    + rename(path: string, newName: string) : bool
+    + move(src: string, dst: string) : bool
+    + resolveFile(path: string) : shared_ptr<File>
+    + resolveDir(path: string) : shared_ptr<Directory>
+}
+
+' ─────────────────────────────────────
+'  Abstract component
+' ─────────────────────────────────────
+
+interface FileSystemComponent <<interface>> {
+    --
+    + getName() : string
+    + getSize() : size_t
+    + getComponentType() : FileSystemComponentType
+    + getCreationTime() : time_t
+    + getModificationTime() : time_t
+    + setName(name: string) : void
+    + updateModificationTime() : void
+}
+
+' ─────────────────────────────────────
+'  Directory
+' ─────────────────────────────────────
+
+class Directory {
+    - name             : string
+    - creationTime     : time_t
+    - modificationTime : time_t
+    - children         : vector<shared_ptr<FileSystemComponent>>
+    - parent           : weak_ptr<Directory>
+    --
+    + getName() : string
+    + getSize() : size_t
+    + getComponentType() : FileSystemComponentType
+    + getCreationTime() : time_t
+    + getModificationTime() : time_t
+    + setName(name: string) : void
+    + updateModificationTime() : void
+    + getParent() : weak_ptr<Directory>
+    + addChild(component: shared_ptr<FileSystemComponent>) : void
+    + removeChild(name: string) : void
+    + hasChild(name: string) : bool
+    + getChildren() : vector<shared_ptr<FileSystemComponent>>
+    + findChild(name: string) : shared_ptr<FileSystemComponent>
+}
+
+' ─────────────────────────────────────
+'  File
+' ─────────────────────────────────────
+
+class File {
+    - name             : string
+    - content          : string
+    - creationTime     : time_t
+    - modificationTime : time_t
+    --
+    + getName() : string
+    + getSize() : size_t
+    + getComponentType() : FileSystemComponentType
+    + getCreationTime() : time_t
+    + getModificationTime() : time_t
+    + setName(name: string) : void
+    + updateModificationTime() : void
+    + getContent() : string
+    + setContent(content: string) : void
+    + appendContent(content: string) : void
+    + searchLines(pattern: string) : vector<string>
+}
+
+' ─────────────────────────────────────
+'  Persistence
+' ─────────────────────────────────────
+
+interface IFileSystemPersistence <<interface>> {
+    --
+    + serialize(fs: const FileSystem&) : void
+    + deserialize(fs: FileSystem&) : void
+}
+
+' ─────────────────────────────────────
+'  Enum
+' ─────────────────────────────────────
+
+enum FileSystemComponentType {
+    FILE
+    DIRECTORY
+}
+
+' ─────────────────────────────────────
+'  Relationships
+' ─────────────────────────────────────
+
+Application *-- FileSystem
+Application *-- ConcreteCommandFactory
+Application *-- CommandProcessor
+
+CommandProcessor ..> FileSystem       : <<uses>>
+CommandProcessor ..> ICommandFactory  : <<uses>>
+
+ICommandFactory <|.. ConcreteCommandFactory
+
+ConcreteCommandFactory ..> ICommand   : <<creates>>
+
+ICommand <|.. ConcreteCommands
+
+ConcreteCommands ..> FileSystem       : <<uses>>
+
+FileSystem o-- FileSystemComponent    : <<manages>>
+FileSystem ..> IFileSystemPersistence : <<uses>>
+
+FileSystemComponent <|.. Directory
+FileSystemComponent <|.. File
+
+FileSystemComponent ..> FileSystemComponentType : <<uses>>
+
+@enduml
