@@ -55,11 +55,10 @@ void FindCommand::findByContent(SearchContext &context) const {
 }
 
 void FindCommand::findByTimestamp(SearchContext &context) const {
-  auto startTime = std::stoll(context.arguments[3]);
-  auto endTime = std::stoll(context.arguments[4]);
   for (const auto &item : context.components) {
     auto itemTime = item->getModificationTime();
-    if (itemTime >= startTime && itemTime <= endTime) {
+    if (itemTime >= context.parsedStartTime &&
+        itemTime <= context.parsedEndTime) {
       context.result.push_back(item);
     }
   }
@@ -120,16 +119,19 @@ void FindCommand::handleTimestampSearch(SearchContext &context) const {
     std::cout << "find: too many arguments" << std::endl;
     return;
   }
-  if (Utility::isNumber(context.arguments[3]) == false) {
-    std::cout << "find: invalid timestamp: '" << context.arguments[3] << "'"
-              << std::endl;
+  auto startResult = Utility::parseDate(context.arguments[3], false);
+  if (!startResult) {
+    std::cout << "find: invalid date" << std::endl;
     return;
   }
-  if (Utility::isNumber(context.arguments[4]) == false) {
-    std::cout << "find: invalid timestamp: '" << context.arguments[4] << "'"
-              << std::endl;
+  context.parsedStartTime = *startResult;
+
+  auto endResult = Utility::parseDate(context.arguments[4], true);
+  if (!endResult) {
+    std::cout << "find: invalid date" << std::endl;
     return;
   }
+  context.parsedEndTime = *endResult;
   findByTimestamp(context);
 }
 

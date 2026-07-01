@@ -38,7 +38,8 @@ void HelpCommand::showCommandHelp(const std::string &command) const {
        "  -name <pattern>           - Find by name\n"
        "  -content <text>          - Find files containing text\n"
        "  -size <min> <max>         - Find by size range in bytes\n"
-       "  -timestamp <start> <end>  - Find by modification timestamp range"},
+       "  -timestamp <start> <end>  - Find by date range (format: YYYY-MM-DD)\n"
+       "                              e.g. find . -timestamp 2025-07-01 2025-07-05"},
       {"help",
        "help [command] - Show general help or help for specific command"},
       {"ls", "ls [path] - List contents of directory. If no path given, lists "

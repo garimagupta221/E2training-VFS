@@ -41,3 +41,6 @@ FILE:/search_dir/code.cpp
 CONTENT:0
 END_FILE
 DIR:/search_dir/sub_dir
+FILE:/my_new_file.txt
+CONTENT:0
+END_FILE

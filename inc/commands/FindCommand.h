@@ -7,6 +7,8 @@ struct SearchContext {
   const std::vector<std::string> &arguments;
   const std::vector<std::shared_ptr<IFileSystemComponent>> &components;
   std::vector<std::shared_ptr<IFileSystemComponent>> &result;
+  std::time_t parsedStartTime = 0;
+  std::time_t parsedEndTime = 0;
 };
 
 class FindCommand : public ICommand {
