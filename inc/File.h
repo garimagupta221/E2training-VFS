@@ -1,5 +1,5 @@
 #pragma once
-#include "interfaces/IFileSystemComponent.h"
+#include "IFileSystemComponent.h"
 #include <string>
 #include <vector>
 

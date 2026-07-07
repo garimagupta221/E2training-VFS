@@ -1,6 +1,6 @@
 
 #pragma once
-#include "interfaces/IFileSystemComponent.h"
+#include "IFileSystemComponent.h"
 #include <memory>
 #include <vector>
 

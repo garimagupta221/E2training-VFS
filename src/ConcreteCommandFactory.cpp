@@ -1,49 +1,59 @@
 #include "ConcreteCommandFactory.h"
-#include "commands/CatCommand.h"
-#include "commands/CdCommand.h"
-#include "commands/EchoCommand.h"
-#include "commands/FindCommand.h"
-#include "commands/LsCommand.h"
-#include "commands/MkdirCommand.h"
-#include "commands/PwdCommand.h"
-#include "commands/RmCommand.h"
-#include "commands/TouchCommand.h"
-#include "commands/HelpCommand.h"
+#include "CatCommand.h"
+#include "CdCommand.h"
+#include "EchoCommand.h"
+#include "FindCommand.h"
+#include "HelpCommand.h"
+#include "LsCommand.h"
+#include "MkdirCommand.h"
+#include "PwdCommand.h"
+#include "RmCommand.h"
+#include "TouchCommand.h"
 
 ConcreteCommandFactory::ConcreteCommandFactory(FileSystem &fileSystem)
-    : fileSystem(fileSystem) {}
+    : fileSystem(fileSystem) {
+  commandMap["mkdir"] = MKDIR;
+  commandMap["touch"] = TOUCH;
+  commandMap["ls"] = LS;
+  commandMap["cd"] = CD;
+  commandMap["pwd"] = PWD;
+  commandMap["rm"] = RM;
+  commandMap["cat"] = CAT;
+  commandMap["echo"] = ECHO;
+  commandMap["find"] = FIND;
+  commandMap["help"] = HELP;
+}
 
 std::unique_ptr<ICommand>
 ConcreteCommandFactory::createCommand(const std::string &name) {
-  if (name == "mkdir") {
+  auto it = commandMap.find(name);
+  if (it == commandMap.end()) {
+    return nullptr;
+  }
+
+  auto command = it->second;
+  switch (command) {
+  case MKDIR:
     return std::make_unique<MkdirCommand>(fileSystem);
-  }
-  if (name == "touch") {
+  case TOUCH:
     return std::make_unique<TouchCommand>(fileSystem);
-  }
-  if (name == "ls") {
+  case LS:
     return std::make_unique<LsCommand>(fileSystem);
-  }
-  if (name == "cd") {
+  case CD:
     return std::make_unique<CdCommand>(fileSystem);
-  }
-  if (name == "pwd") {
+  case PWD:
     return std::make_unique<PwdCommand>(fileSystem);
-  }
-  if (name == "rm") {
+  case RM:
     return std::make_unique<RmCommand>(fileSystem);
-  }
-  if (name == "cat") {
+  case CAT:
     return std::make_unique<CatCommand>(fileSystem);
-  }
-  if (name == "echo") {
+  case ECHO:
     return std::make_unique<EchoCommand>(fileSystem);
-  }
-  if (name == "find") {
+  case FIND:
     return std::make_unique<FindCommand>(fileSystem);
-  }
-  if (name == "help") {
+  case HELP:
     return std::make_unique<HelpCommand>(fileSystem);
+  default:
+    return nullptr;
   }
-  return nullptr;
 }

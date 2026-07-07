@@ -1,7 +1,7 @@
 #pragma once
 #include "Directory.h"
 #include "FileSystem.h"
-#include "interfaces/ICommand.h"
+#include "ICommand.h"
 
 struct SearchContext {
   const std::vector<std::string> &arguments;

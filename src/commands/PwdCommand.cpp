@@ -1,4 +1,4 @@
-#include "commands/PwdCommand.h"
+#include "PwdCommand.h"
 #include <iostream>
 
 PwdCommand::PwdCommand(FileSystem &fileSystem) : fileSystem(fileSystem) {}

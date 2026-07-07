@@ -1,6 +1,7 @@
 #pragma once
-#include "interfaces/ICommand.h"
 #include "FileSystem.h"
+#include "ICommand.h"
+
 
 class PwdCommand : public ICommand {
 public:

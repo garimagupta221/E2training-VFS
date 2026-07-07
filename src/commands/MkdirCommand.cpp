@@ -1,4 +1,4 @@
-#include "commands/MkdirCommand.h"
+#include "MkdirCommand.h"
 #include <iostream>
 
 MkdirCommand::MkdirCommand(FileSystem &fileSystem) : fileSystem(fileSystem) {}

@@ -3,7 +3,7 @@
 #include "Directory.h"
 #include "File.h"
 #include "Utility.h"
-#include "interfaces/IFileSystemPersistence.h"
+#include "IFileSystemPersistence.h"
 #include <memory>
 #include <string>
 #include <vector>

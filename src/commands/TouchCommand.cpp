@@ -1,4 +1,4 @@
-#include "commands/TouchCommand.h"
+#include "TouchCommand.h"
 #include <iostream>
 
 TouchCommand::TouchCommand(FileSystem &fileSystem) : fileSystem(fileSystem) {}

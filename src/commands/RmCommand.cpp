@@ -1,4 +1,4 @@
-#include "commands/RmCommand.h"
+#include "RmCommand.h"
 #include <iostream>
 
 RmCommand::RmCommand(FileSystem &fileSystem) : fileSystem(fileSystem) {}

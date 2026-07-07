@@ -1,4 +1,4 @@
-#include "commands/FindCommand.h"
+#include "FindCommand.h"
 #include "File.h"
 #include "Utility.h"
 #include <iostream>

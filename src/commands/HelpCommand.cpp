@@ -1,4 +1,4 @@
-#include "commands/HelpCommand.h"
+#include "HelpCommand.h"
 #include <iostream>
 #include <unordered_map>
 

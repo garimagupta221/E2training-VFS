@@ -1,4 +1,4 @@
-#include "commands/CdCommand.h"
+#include "CdCommand.h"
 #include "VFSConstants.h"
 #include <iostream>
 

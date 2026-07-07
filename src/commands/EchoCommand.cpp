@@ -1,4 +1,4 @@
-#include "commands/EchoCommand.h"
+#include "EchoCommand.h"
 #include <iostream>
 
 const std::string OVERWRITE_FLAG = ">";

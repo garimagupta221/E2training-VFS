@@ -1,4 +1,4 @@
-#include "commands/LsCommand.h"
+#include "LsCommand.h"
 #include <iostream>
 #include <iterator>
 

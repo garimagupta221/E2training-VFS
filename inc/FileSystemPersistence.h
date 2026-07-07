@@ -1,6 +1,6 @@
 #pragma once
 #include "Directory.h"
-#include "interfaces/IFileSystemPersistence.h"
+#include "IFileSystemPersistence.h"
 #include <iosfwd>
 #include <string>
 

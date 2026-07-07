@@ -1,7 +1,7 @@
 
 #pragma once
 #include "FileSystem.h"
-#include "interfaces/ICommandFactory.h"
+#include "ICommandFactory.h"
 #include <string>
 #include <vector>
 

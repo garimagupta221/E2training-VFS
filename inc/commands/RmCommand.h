@@ -1,5 +1,5 @@
 #pragma once
-#include "interfaces/ICommand.h"
+#include "ICommand.h"
 #include "FileSystem.h"
 
 class RmCommand : public ICommand {

@@ -1,4 +1,4 @@
-#include "commands/CatCommand.h"
+#include "CatCommand.h"
 #include <iostream>
 
 CatCommand::CatCommand(FileSystem &fileSystem) : fileSystem(fileSystem) {}
