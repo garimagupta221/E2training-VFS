@@ -1,0 +1,39 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic/Static libraries
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+*.la
+*.lai
+
+# Executables
+*.exe
+*.out
+*.app
+
+# IDE-specific files and directories
+.vscode/
+.vs/
+.idea/
+*.user
+*.suo
+*.sln
+*.swp
+
+# Project build and output directories
+build/
+bin/

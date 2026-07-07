@@ -1,0 +1,348 @@
+@startuml VFSClassDiagram_v8
+
+skinparam backgroundColor #FFFFFF
+skinparam classBackgroundColor #F5F7FA
+skinparam classBorderColor #5A5A8A
+skinparam classBorderThickness 1
+skinparam classHeaderBackgroundColor #D0D4F0
+skinparam classFontColor #1A1A2E
+skinparam classAttributeFontColor #2C2C4A
+skinparam classStereotypeFontColor #5555AA
+skinparam arrowColor #4A4A7A
+skinparam arrowThickness 1
+skinparam lineType ortho
+skinparam shadowing false
+skinparam roundcorner 4
+skinparam defaultFontName sans-serif
+skinparam defaultFontSize 13
+
+skinparam class {
+    AttributeFontColor #2C2C4A
+    AttributeFontSize 12
+    MethodFontColor #1A6B1A
+    MethodFontSize 12
+}
+
+' ─────────────────────────────────────
+'  Application (top-level owner)
+' ─────────────────────────────────────
+
+class Application {
+    - fileSystem : FileSystem&
+    - commandProcessor : CommandProcessor&
+    --
+    + Application(fileSystem: FileSystem&, commandProcessor: CommandProcessor&)
+    + start() : void
+}
+
+' ─────────────────────────────────────
+'  CommandProcessor (REPL loop)
+' ─────────────────────────────────────
+
+class CommandProcessor {
+    - fileSystem : FileSystem&
+    - commandFactory : ICommandFactory&
+    --
+    + CommandProcessor(fileSystem: FileSystem&, commandFactory: ICommandFactory&)
+    + run() : void
+    - tokenise(inputLine: string) : vector<string>
+    - executeCommand(commandName: string, commandTokens: vector<string>) : void
+}
+
+' ─────────────────────────────────────
+'  Command layer
+' ─────────────────────────────────────
+
+interface ICommandFactory <<interface>> {
+    --
+    + createCommand(commandName: string) : unique_ptr<ICommand>
+}
+
+class ConcreteCommandFactory {
+    - fileSystem : FileSystem&
+    --
+    + ConcreteCommandFactory(fileSystem: FileSystem&)
+    + createCommand(name: string) : unique_ptr<ICommand>
+}
+
+interface ICommand <<interface>> {
+    --
+    + execute(arguments: vector<string>) : void
+}
+
+package "Commands" {
+    class CatCommand {
+        - fileSystem : FileSystem&
+        --
+        + CatCommand(fileSystem: FileSystem&)
+        + execute(arguments: vector<string>) : void
+    }
+
+    class CdCommand {
+        - fileSystem : FileSystem&
+        --
+        + CdCommand(fileSystem: FileSystem&)
+        + execute(arguments: vector<string>) : void
+    }
+
+    class EchoCommand {
+        - fileSystem : FileSystem&
+        --
+        + EchoCommand(fileSystem: FileSystem&)
+        + execute(arguments: vector<string>) : void
+    }
+
+    class FindCommand {
+        - fileSystem : FileSystem&
+        --
+        + FindCommand(fileSystem: FileSystem&)
+        + execute(arguments: vector<string>) : void
+        - collectAllComponents(directory: shared_ptr<Directory>, collectedComponents: vector<shared_ptr<IFileSystemComponent>>&) : void
+        - findByName(context: SearchContext&) : void
+        - findBySize(context: SearchContext&) : void
+        - findByContent(context: SearchContext&) : void
+        - findByTimestamp(context: SearchContext&) : void
+        - handleNameSearch(context: SearchContext&) : void
+        - handleContentSearch(context: SearchContext&) : void
+        - handleSizeSearch(context: SearchContext&) : void
+        - handleTimestampSearch(context: SearchContext&) : void
+    }
+
+    class HelpCommand {
+        - fileSystem : FileSystem&
+        --
+        + HelpCommand(fileSystem: FileSystem&)
+        + execute(arguments: vector<string>) : void
+        - showHelp() : void
+        - showCommandHelp(command: string) : void
+    }
+
+    class LsCommand {
+        - fileSystem : FileSystem&
+        --
+        + LsCommand(fileSystem: FileSystem&)
+        + execute(arguments: vector<string>) : void
+    }
+
+    class MkdirCommand {
+        - fileSystem : FileSystem&
+        --
+        + MkdirCommand(fileSystem: FileSystem&)
+        + execute(arguments: vector<string>) : void
+    }
+
+    class PwdCommand {
+        - fileSystem : FileSystem&
+        --
+        + PwdCommand(fileSystem: FileSystem&)
+        + execute(arguments: vector<string>) : void
+    }
+
+    class RmCommand {
+        - fileSystem : FileSystem&
+        --
+        + RmCommand(fileSystem: FileSystem&)
+        + execute(arguments: vector<string>) : void
+    }
+
+    class TouchCommand {
+        - fileSystem : FileSystem&
+        --
+        + TouchCommand(fileSystem: FileSystem&)
+        + execute(arguments: vector<string>) : void
+    }
+}
+
+struct SearchContext {
+    + arguments : const vector<string>&
+    + components : const vector<shared_ptr<IFileSystemComponent>>&
+    + result : vector<shared_ptr<IFileSystemComponent>>&
+    + parsedStartTime : time_t
+    + parsedEndTime : time_t
+}
+
+' ─────────────────────────────────────
+'  Core FileSystem
+' ─────────────────────────────────────
+
+class FileSystem {
+    - persistenceProvider : IFileSystemPersistence&
+    - rootDirectory : shared_ptr<Directory>
+    - currentWorkingDirectory : shared_ptr<Directory>
+    --
+    + FileSystem(persistance: IFileSystemPersistence&)
+    + initializeFileSystem() : void
+    + save() : void
+    + createDirectory(directoryPath: string) : bool
+    + createFile(filePath: string, fileContent: string = "") : bool
+    + removeFile(filePath: string) : bool
+    + removeDirectory(directoryPath: string) : bool
+    + changeDirectory(directoryPath: string) : bool
+    + getCurrentPath() : string
+    + resolveFile(filePath: string) : shared_ptr<File>
+    + resolveDirectory(directoryPath: string) : shared_ptr<Directory>
+    + getRootDirectory() : shared_ptr<Directory>
+    + getCurrentWorkingDirectory() : shared_ptr<Directory>
+    - resolveParentDirectory(path: string, componentName: string&) : shared_ptr<Directory>
+}
+
+' ─────────────────────────────────────
+'  Abstract component
+' ─────────────────────────────────────
+
+interface IFileSystemComponent <<interface>> {
+    --
+    + getName() : string
+    + getSize() : size_t
+    + getComponentType() : FileSystemComponentType
+    + getCreationTime() : time_t
+    + getModificationTime() : time_t
+    + setName(name: string) : void
+    + updateModificationTime() : void
+}
+
+' ─────────────────────────────────────
+'  Directory
+' ─────────────────────────────────────
+
+class Directory {
+    - name : string
+    - creationTime : time_t
+    - modificationTime : time_t
+    - children : vector<shared_ptr<IFileSystemComponent>>
+    - parent : weak_ptr<Directory>
+    --
+    + Directory(name: string)
+    + getName() : string
+    + getSize() : size_t
+    + getComponentType() : FileSystemComponentType
+    + getCreationTime() : time_t
+    + getModificationTime() : time_t
+    + setName(name: string) : void
+    + updateModificationTime() : void
+    + getParent() : weak_ptr<Directory>
+    + setParent(parent: weak_ptr<Directory>) : void
+    + addChild(component: shared_ptr<IFileSystemComponent>) : void
+    + removeChild(childName: string) : void
+    + hasChild(childName: string) : bool
+    + getChildren() : vector<shared_ptr<IFileSystemComponent>>
+    + findChild(childName: string) : shared_ptr<IFileSystemComponent>
+}
+
+' ─────────────────────────────────────
+'  File
+' ─────────────────────────────────────
+
+class File {
+    - name : string
+    - content : string
+    - creationTime : time_t
+    - modificationTime : time_t
+    --
+    + File(name: string, content: string = "")
+    + getName() : string
+    + getSize() : size_t
+    + getComponentType() : FileSystemComponentType
+    + getCreationTime() : time_t
+    + getModificationTime() : time_t
+    + setName(name: string) : void
+    + updateModificationTime() : void
+    + getContent() : string
+    + setContent(content: string) : void
+    + appendContent(content: string) : void
+    + searchLines(pattern: string) : vector<string>
+}
+
+' ─────────────────────────────────────
+'  Persistence
+' ─────────────────────────────────────
+
+interface IFileSystemPersistence <<interface>> {
+    --
+    + serialize(filesystem: const FileSystem&) : void
+    + deserialize() : shared_ptr<Directory>
+}
+
+class FileSystemPersistence {
+    - filename : string
+    - DIR_PREFIX : const string
+    - FILE_PREFIX : const string
+    - CONTENT_PREFIX : const string
+    - END_FILE_TAG : const string
+    --
+    + FileSystemPersistence(filename: string)
+    + serialize(fs: const FileSystem&) : void
+    + deserialize() : shared_ptr<Directory>
+    - hasPrefix(str: string, prefix: string) : bool
+    - removePrefix(line: string, prefix: string) : string
+    - saveDirectory(outFile: ofstream&, dir: const shared_ptr<Directory>&, currentPath: string) : void
+    - deserializeDirectory(directoryPath: string, root: const shared_ptr<Directory>&) : void
+    - readFileContent(file: ifstream&, contentSize: size_t) : string
+    - ensureParentDir(root: const shared_ptr<Directory>&, path: string, childName: string&) : shared_ptr<Directory>
+}
+
+' ─────────────────────────────────────
+'  Enum
+' ─────────────────────────────────────
+
+enum FileSystemComponentType {
+    FILE
+    DIRECTORY
+}
+
+' ─────────────────────────────────────
+'  Utility
+' ─────────────────────────────────────
+
+class Utility {
+    --
+    {static} + splitPath(path: string) : vector<string>
+    {static} + isNumber(inputString: string) : bool
+    {static} + parseDate(dateString: string, isEndOfDay: bool) : optional<time_t>
+}
+
+' ─────────────────────────────────────
+'  Relationships
+' ─────────────────────────────────────
+
+Application o-- FileSystem
+Application o-- CommandProcessor
+
+CommandProcessor o-- FileSystem
+CommandProcessor o-- ICommandFactory
+
+ICommandFactory <|.. ConcreteCommandFactory
+ConcreteCommandFactory o-- FileSystem
+ConcreteCommandFactory ..> ICommand : <<creates>>
+
+ICommand <|.. CatCommand
+ICommand <|.. CdCommand
+ICommand <|.. EchoCommand
+ICommand <|.. FindCommand
+ICommand <|.. HelpCommand
+ICommand <|.. LsCommand
+ICommand <|.. MkdirCommand
+ICommand <|.. PwdCommand
+ICommand <|.. RmCommand
+ICommand <|.. TouchCommand
+
+Commands ..> FileSystem : <<uses>>
+FindCommand ..> SearchContext : <<uses>>
+
+FileSystem o-- Directory : <<manages>>
+FileSystem o-- IFileSystemPersistence : <<uses>>
+FileSystem ..> Utility : <<uses>>
+
+IFileSystemPersistence <|.. FileSystemPersistence
+FileSystemPersistence ..> Directory : <<serializes/deserializes>>
+FileSystemPersistence ..> File : <<serializes/deserializes>>
+
+IFileSystemComponent <|.. Directory
+IFileSystemComponent <|.. File
+
+Directory *-- IFileSystemComponent : <<contains>>
+Directory ..> Utility : <<uses>>
+
+IFileSystemComponent ..> FileSystemComponentType : <<uses>>
+
+@enduml
